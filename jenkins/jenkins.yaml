@@ -1,28 +1,63 @@
 jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
+  crumbIssuer: "standard"
   securityRealm:
-    local:
-      allowsSignup: false
-      users:
-       - id: ${JENKINS_ADMIN_ID}
-         password: ${JENKINS_ADMIN_PASSWORD}
-    # ldap:
-    #   configurations:
-    #     - server: ldap.acme.com
-    #       rootDN: dc=acme,dc=fr
-    #       managerDN: "manager"
-    #       managerPasswordSecret: "${LDAP_PASSWORD}"
-    #       userSearch: "(&(objectCategory=User)(sAMAccountName={0}))"
-    #   cache:
-    #     size: 100
-    #     ttl: 10
-    #   userIdStrategy: CaseInsensitive
-    #   groupIdStrategy: CaseSensitive
+    # local: # Only for hardcode admin login | Recommend using ldap in production
+    #   allowsSignup: false
+    #   users:
+    #    - id: ${JENKINS_ADMIN_ID}
+    #      password: ${JENKINS_ADMIN_PASSWORD}
+    
+    ldap:
+      configurations:
+      - groupSearchFilter: "(& (cn={0}) (objectclass=posixGroup) )"
+        inhibitInferRootDN: false
+        managerDN: "cn=service,ou=Users,dc=acme,dc=local"
+        managerPasswordSecret: ${LDAP_SERVICE_PASSWORD}
+        rootDN: "dc=acme,dc=local"
+        server: "ldap://slapd:389"
+      disableMailAddressResolver: false
+      disableRolePrefixing: true
+      groupIdStrategy: "caseInsensitive"
+      userIdStrategy: "caseInsensitive"
   
-  authorizationStrategy:
+  authorizationStrategy: 
     globalMatrix:
       grantedPermissions:
-        - "Overall/Read:anonymous"
+        - "Job/Build:authenticated"
+        - "Job/Cancel:authenticated"
+        - "Job/Read:authenticated"
+        - "Overall/Administer:Acme Superusers"
+        - "Overall/Read:authenticated"
+        - "View/Read:authenticated"
+
+    # loggedInUsersCanDoAnything: # For testing only
+    #   allowAnonymousRead: false
+
+  # remotingSecurity:
+  #   enabled: true
+
+  # agentProtocols:
+  # - "JNLP4-connect"
+  # - "Ping"
+
+  # slaveAgentPort: 50000
+
+  # nodes:
+  # - permanent:
+  #     name: "agent-java"
+  #     labelString: "java-label"
+  #     numExecutors: 2
+  #     remoteFS: "/opt/jenkins_workspace/"
+  #     launcher:
+  #       ssh:
+  #         credentialsId: "BUILD_AGENT_SSH_KEY"
+  #         host: "agent-java"
+  #         port: 22
+  #         sshHostKeyVerificationStrategy:
+  #           manuallyTrustedKeyVerificationStrategy:
+  #             requireInitialManualTrust: false
+  #     retentionStrategy: "always"
 
 credentials:
   system:
@@ -40,6 +75,11 @@ credentials:
           description: 'Sonar token'
           scope: GLOBAL
       - string:
+          id: 'nexusToken'
+          secret: ${NEXUS_TOKEN}
+          description: 'Nexus token'
+          scope: GLOBAL
+      - string:
           id: 'slackToken'
           secret: ${SLACK_TOKEN}
           description: 'Slack token'
@@ -47,15 +87,33 @@ credentials:
 unclassified:
   location:
     url: ${JENKINS_URL}
-  # slackNotifier:
-  #   teamDomain: ${SLACK_TEAM_DOMAIN}
-  #   tokenCredentialId: slackToken
+  slackNotifier:
+    teamDomain: ${SLACK_TEAM_DOMAIN}
+    baseUrl: ${SLACK_BASE_URL}
+    tokenCredentialId: slackToken
+  # sonarGlobalConfiguration:
+  #   installations:
+  #     - name: SonarQube
+  #       credentialsId: 'sonarToken'
+  #       serverUrl: ${SONAR_URL}
+  #       webhookSecretId: webhook
+  #       mojoVersion: ""
+  #       additionalAnalysisProperties: ""
+  #       additionalProperties: ""
+  #       triggers:
+  #         envVar: ""
+  #         skipScmCause: false
+  #         skipUpstreamCause: false
 
 tool:
   git:
     installations:
       - name: git
         home: /usr/local/bin/git
+  # jdk:
+  #   installations:
+  #     - home: "/usr/lib/jvm/java-1.8.0-amazon-corretto/"
+  #       name: 'JDK8'
   maven:
     installations:
       - name: maven3

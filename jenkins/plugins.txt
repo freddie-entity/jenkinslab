@@ -11,4 +11,6 @@ sonar:2.15
 nexus-artifact-uploader
 slack:latest
 build-timestamp:1.0.3
-dependency-check-jenkins-plugin
+matrix-auth
+ssh-credentials
+ssh-slaves
