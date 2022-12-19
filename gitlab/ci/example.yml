@@ -1,0 +1,32 @@
+stages:
+  - compile-job
+  - sonarqube-job
+  - build-job
+  - deploy-job
+
+compile-job:
+  stage: compile # This job runs in the build stage, which runs first.
+  script:
+    - echo "Compiling the code..."
+    - mvn clean compile
+
+sonarqube-job:
+  stage: sonarqube-analysis
+  script:
+    # It only starts when the job in the build stage completes successfully.
+    - echo "Running Sonarqube Analysis"
+    - mvn sonar:sonar -Dsonar.host.url=http://3.6.93.228:9000 -Dsonar.login=hash -Dsonar.projectKey=myproject -Dsonar.projectName=Petclinic -Dsonar.java.binaries=.
+
+build-job:
+  stage: build
+  # It can run at the same time as unit-test-job (in parallel).
+  script:
+    - echo "Maven Build"
+    - mvn clean install
+
+deploy-job:
+  stage: deploy # It only runs when *both* jobs in the test stage complete successfully.
+  environment: production
+  script:
+    - echo "Deploying application..."
+    - echo "Application successfully deployed."

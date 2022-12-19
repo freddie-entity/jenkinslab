@@ -1,0 +1,14 @@
+cloudbees-folder:latest
+git:latest
+ldap:latest
+mailer:latest
+ws-cleanup:latest
+job-dsl
+configuration-as-code:latest
+maven-plugin:3.20
+gradle:latest
+sonar:2.15
+nexus-artifact-uploader
+slack:latest
+build-timestamp:1.0.3
+dependency-check-jenkins-plugin
