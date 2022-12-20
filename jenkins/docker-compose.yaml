@@ -1,0 +1,20 @@
+version: '3.7'
+services:
+  jenkins:
+    build: ./
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    networks:
+      - cisystem
+    
+    env_file: ./secrets.env
+    restart: always
+    # depends_on:
+    #   - slapd
+
+networks:
+  cisystem:
+
+volumes:
+  my_jenkins_home:

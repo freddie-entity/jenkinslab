@@ -8,28 +8,28 @@ jenkins:
     #    - id: ${JENKINS_ADMIN_ID}
     #      password: ${JENKINS_ADMIN_PASSWORD}
     
-    ldap:
-      configurations:
-      - groupSearchFilter: "(& (cn={0}) (objectclass=posixGroup) )"
-        inhibitInferRootDN: false
-        managerDN: "cn=service,ou=Users,dc=acme,dc=local"
-        managerPasswordSecret: ${LDAP_SERVICE_PASSWORD}
-        rootDN: "dc=acme,dc=local"
-        server: "ldap://slapd:389"
-      disableMailAddressResolver: false
-      disableRolePrefixing: true
-      groupIdStrategy: "caseInsensitive"
-      userIdStrategy: "caseInsensitive"
+  #   ldap:
+  #     configurations:
+  #     - groupSearchFilter: "(& (cn={0}) (objectclass=posixGroup) )"
+  #       inhibitInferRootDN: false
+  #       managerDN: "cn=service,ou=Users,dc=acme,dc=local"
+  #       managerPasswordSecret: ${LDAP_SERVICE_PASSWORD}
+  #       rootDN: "dc=acme,dc=local"
+  #       server: "ldap://slapd:389"
+  #     disableMailAddressResolver: false
+  #     disableRolePrefixing: true
+  #     groupIdStrategy: "caseInsensitive"
+  #     userIdStrategy: "caseInsensitive"
   
-  authorizationStrategy: 
-    globalMatrix:
-      grantedPermissions:
-        - "Job/Build:authenticated"
-        - "Job/Cancel:authenticated"
-        - "Job/Read:authenticated"
-        - "Overall/Administer:Acme Superusers"
-        - "Overall/Read:authenticated"
-        - "View/Read:authenticated"
+  # authorizationStrategy: 
+  #   globalMatrix:
+  #     grantedPermissions:
+  #       - "Job/Build:authenticated"
+  #       - "Job/Cancel:authenticated"
+  #       - "Job/Read:authenticated"
+  #       - "Overall/Administer:Acme Superusers"
+  #       - "Overall/Read:authenticated"
+  #       - "View/Read:authenticated"
 
     # loggedInUsersCanDoAnything: # For testing only
     #   allowAnonymousRead: false
@@ -91,19 +91,20 @@ unclassified:
     teamDomain: ${SLACK_TEAM_DOMAIN}
     baseUrl: ${SLACK_BASE_URL}
     tokenCredentialId: slackToken
-  # sonarGlobalConfiguration:
-  #   installations:
-  #     - name: SonarQube
-  #       credentialsId: 'sonarToken'
-  #       serverUrl: ${SONAR_URL}
-  #       webhookSecretId: webhook
-  #       mojoVersion: ""
-  #       additionalAnalysisProperties: ""
-  #       additionalProperties: ""
-  #       triggers:
-  #         envVar: ""
-  #         skipScmCause: false
-  #         skipUpstreamCause: false
+  sonarGlobalConfiguration:
+    buildWrapperEnabled: true
+    installations:
+      - name: SonarQubeServer
+        credentialsId: 'sonarToken'
+        serverUrl: ${SONAR_URL}
+        webhookSecretId: webhook
+        mojoVersion: ""
+        additionalAnalysisProperties: ""
+        additionalProperties: ""
+        triggers:
+          envVar: ""
+          skipScmCause: false
+          skipUpstreamCause: false
 
 tool:
   git:
@@ -124,25 +125,25 @@ tool:
                 - maven:
                     id: "3.8.4"
 
-jobs:
-  - script: >
-      def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
-      "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
+# jobs:
+#   - script: >
+#       def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
+#       "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
 
-      microservices.each { jobName ->
-          pipelineJob(jobName) {
-              definition {
-                  cpsScm {
-                      scm {
-                          git {
-                              remote {
-                                  url('https://gitlab.com/gitops-freddieentity/application')
-                              }
-                              branch('*/main')
-                          }
-                      }
-                      scriptPath(jobName + '/Jenkinsfile')
-                  }
-              }
-          }
-      }
+#       microservices.each { jobName ->
+#           pipelineJob(jobName) {
+#               definition {
+#                   cpsScm {
+#                       scm {
+#                           git {
+#                               remote {
+#                                   url('https://gitlab.com/gitops-freddieentity/application')
+#                               }
+#                               branch('*/main')
+#                           }
+#                       }
+#                       scriptPath(jobName + '/Jenkinsfile')
+#                   }
+#               }
+#           }
+#       }

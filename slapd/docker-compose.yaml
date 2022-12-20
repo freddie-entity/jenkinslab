@@ -1,0 +1,25 @@
+version: '3.7'
+services:
+  slapd:
+    build:
+      context: ./slapd
+    ports:
+      - 389:389
+      - 636:636
+    networks:
+      - cisystem
+
+  phpldapadmin:
+    image: docker.io/osixia/phpldapadmin:0.9.0
+    environment:
+      PHPLDAPADMIN_LDAP_HOSTS: slapd
+      PHPLDAPADMIN_HTTPS: 'false'
+    networks:
+      - cisystem
+    ports:
+      - 8090:80
+    depends_on:
+      - slapd
+
+networks:
+  cisystem:

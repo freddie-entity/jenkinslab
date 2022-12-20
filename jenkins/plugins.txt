@@ -1,3 +1,4 @@
+ansicolor
 cloudbees-folder:latest
 git:latest
 ldap:latest
@@ -14,3 +15,4 @@ build-timestamp:1.0.3
 matrix-auth
 ssh-credentials
 ssh-slaves
+workflow-aggregator

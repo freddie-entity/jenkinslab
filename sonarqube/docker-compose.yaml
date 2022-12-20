@@ -1,0 +1,31 @@
+version: '3.7'
+services:
+  postgres:
+    image: postgres:9.6
+    networks:
+      - cisystem
+    environment:
+      POSTGRES_USER: sonar
+      POSTGRES_PASSWORD: sonarpasswd
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      
+  sonarqube:
+    image: sonarqube:lts
+    ports:
+      - "9000:9000"
+      - "9092:9092"
+    networks:
+      - cisystem
+    environment:
+      SONARQUBE_JDBC_USERNAME: sonar
+      SONARQUBE_JDBC_PASSWORD: sonarpasswd
+      SONARQUBE_JDBC_URL: "jdbc:postgresql://postgres:5432/sonar"
+    depends_on: 
+      - postgres
+
+networks:
+  cisystem:
+
+volumes:
+  postgres_data:

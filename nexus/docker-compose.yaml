@@ -1,0 +1,16 @@
+version: '3.7'
+services:
+  nexus:
+    image: sonatype/nexus3:3.43.0
+    volumes:
+      - nexus_data:/sonatype-work
+    ports:
+      - "8081:8081"
+    networks:
+      - cisystem
+
+networks:
+  cisystem:
+
+volumes:
+  nexus_data:
