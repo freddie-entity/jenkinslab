@@ -63,11 +63,25 @@ credentials:
   system:
     domainCredentials:
     - credentials:
-      - usernamePassword:
-          id: 'sonarLogin'
-          username: ${SONAR_USER}
-          password: ${SONAR_PASSWORD}
-          description: 'Sonar account'
+      - string:
+          id: 'sonarUser'
+          secret: ${SONAR_USER}
+          description: 'Sonar user'
+          scope: GLOBAL
+      - string:
+          id: 'sonarPassword'
+          secret: ${SONAR_PASSWORD}
+          description: 'Sonar password'
+          scope: GLOBAL
+      - string:
+          id: 'dockerHubUser'
+          secret: ${DOCKERHUB_USER}
+          description: 'Docker Hub User'
+          scope: GLOBAL
+      - string:
+          id: 'dockerHubPassword'
+          secret: ${DOCKERHUB_PASSWORD}
+          description: 'Docker Hub Password'
           scope: GLOBAL
       - string:
           id: 'sonarToken'
@@ -125,25 +139,25 @@ tool:
                 - maven:
                     id: "3.8.4"
 
-# jobs:
-#   - script: >
-#       def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
-#       "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
+jobs:
+  - script: >
+      def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
+      "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
 
-#       microservices.each { jobName ->
-#           pipelineJob(jobName) {
-#               definition {
-#                   cpsScm {
-#                       scm {
-#                           git {
-#                               remote {
-#                                   url('https://gitlab.com/gitops-freddieentity/application')
-#                               }
-#                               branch('*/main')
-#                           }
-#                       }
-#                       scriptPath(jobName + '/Jenkinsfile')
-#                   }
-#               }
-#           }
-#       }
+      microservices.each { jobName ->
+          pipelineJob(jobName) {
+              definition {
+                  cpsScm {
+                      scm {
+                          git {
+                              remote {
+                                  url('https://gitlab.com/gitops-freddieentity/application')
+                              }
+                              branch('*/main')
+                          }
+                      }
+                      scriptPath(jobName + '/Jenkinsfile')
+                  }
+              }
+          }
+      }
