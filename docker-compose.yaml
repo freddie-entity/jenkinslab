@@ -26,14 +26,15 @@ services:
       - postgres_data:/var/lib/postgresql/data
       
   sonarqube:
-    image: sonarqube:9.9.1-community
+    build: ./sonarqube
+    # image: sonarqube:9.9.1-community
     ports:
       - "9000:9000"
       - "9092:9092"
     networks:
       - cisystem
-    volumes:
-      - ./plugins:/opt/sonarqube/extensions/plugins
+    # volumes:
+    #   - ./plugins:/opt/sonarqube/extensions/plugins
     environment:
       SONARQUBE_JDBC_USERNAME: sonar
       SONARQUBE_JDBC_PASSWORD: sonarpasswd
