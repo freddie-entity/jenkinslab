@@ -58,46 +58,70 @@ jenkins:
   #           manuallyTrustedKeyVerificationStrategy:
   #             requireInitialManualTrust: false
   #     retentionStrategy: "always"
+  views:
+  - list:
+      columns:
+      - "status"
+      - "weather"
+      - "jobName"
+      - "lastSuccess"
+      - "lastFailure"
+      - "lastDuration"
+      - "buildButton"
+      - "coverageTotalsColumn"
+      - "favoriteColumn"
+      includeRegex: ".*.service.*"
+      name: "Hipster Shop"
+  - all:
+      name: "all"
+  viewsTabBar: "standard"
 
 credentials:
   system:
     domainCredentials:
     - credentials:
       - string:
-          id: 'sonarUser'
+          id: 'SONAR_USER'
           secret: ${SONAR_USER}
           description: 'Sonar user'
           scope: GLOBAL
       - string:
-          id: 'sonarPassword'
+          id: 'SONAR_PASSWORD'
           secret: ${SONAR_PASSWORD}
           description: 'Sonar password'
           scope: GLOBAL
       - string:
-          id: 'dockerHubUser'
-          secret: ${DOCKERHUB_USER}
-          description: 'Docker Hub User'
-          scope: GLOBAL
-      - string:
-          id: 'dockerHubPassword'
-          secret: ${DOCKERHUB_PASSWORD}
-          description: 'Docker Hub Password'
-          scope: GLOBAL
-      - string:
-          id: 'sonarToken'
+          id: 'SONAR_TOKEN'
           secret: ${SONAR_TOKEN}
           description: 'Sonar token'
           scope: GLOBAL
       - string:
-          id: 'nexusToken'
+          id: 'NEXUS_TOKEN'
           secret: ${NEXUS_TOKEN}
           description: 'Nexus token'
           scope: GLOBAL
       - string:
-          id: 'slackToken'
+          id: 'SLACK_TOKEN'
           secret: ${SLACK_TOKEN}
           description: 'Slack token'
           scope: GLOBAL
+      - string:
+          id: 'GITHUB_TOKEN'
+          secret: ${GITHUB_TOKEN}
+          description: 'Github token'
+          scope: GLOBAL
+      - usernamePassword:
+          description: "Container Registry Credentials"
+          id: "CONTAINER_RESIGTRY"
+          password: ${CONTAINER_REGISTRY_PASSWORD}
+          scope: GLOBAL
+          username: ${CONTAINER_REGISTRY_USER}
+      - file:
+          description: "KUBECONFIG"
+          fileName: "kind-kube-config"
+          id: "KUBECONFIG"
+          scope: GLOBAL
+          secretBytes: ""
 unclassified:
   location:
     url: ${JENKINS_URL}
@@ -124,28 +148,36 @@ tool:
   git:
     installations:
       - name: git
-        home: /usr/local/bin/git
-  # jdk:
-  #   installations:
-  #     - home: "/usr/lib/jvm/java-1.8.0-amazon-corretto/"
-  #       name: 'JDK8'
-  maven:
+        home: /usr/bin/git
+  docker:
     installations:
-      - name: maven3
-        home: "/maven3"
-        properties:
-          - installSource:
-              installers:
-                - maven:
-                    id: "3.8.4"
+      - name: docker
+        home: /usr/bin/docker
+  terraform:
+    installations:
+      - name: terraform
+        home: /usr/local/bin/terraform
+  kubectl:
+    installations:
+      - name: kubectl
+        home: /usr/local/bin/kubectl
+  sonarRunnerInstallation:
+    installations:
+    - name: "sonarqube-scanner"
+      properties:
+      - installSource:
+          installers:
+          - sonarRunnerInstaller:
+              id: "5.0.1.3006"
 
 jobs:
   - script: >
+      def project = "hipstershop"
       def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
       "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
 
       microservices.each { jobName ->
-          pipelineJob(jobName) {
+          pipelineJob(project + "-" + jobName) {
               definition {
                   cpsScm {
                       scm {

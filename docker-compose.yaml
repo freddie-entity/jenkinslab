@@ -7,7 +7,9 @@ services:
       - "50000:50000"
     networks:
       - cisystem
-    
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+
     env_file: ./jenkins/secrets.env
     restart: always
     # depends_on:
@@ -24,27 +26,31 @@ services:
       - postgres_data:/var/lib/postgresql/data
       
   sonarqube:
-    image: sonarqube:lts
+    image: sonarqube:9.9.1-community
     ports:
       - "9000:9000"
       - "9092:9092"
     networks:
       - cisystem
+    volumes:
+      - ./plugins:/opt/sonarqube/extensions/plugins
     environment:
       SONARQUBE_JDBC_USERNAME: sonar
       SONARQUBE_JDBC_PASSWORD: sonarpasswd
       SONARQUBE_JDBC_URL: "jdbc:postgresql://postgres:5432/sonar"
+      SONAR_WEB_JAVAADDITIONALOPTS: -javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.14.0.jar=web
+      SONAR_CE_JAVAADDITIONALOPTS: -javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.14.0.jar=ce
     depends_on: 
       - postgres
 
-  # nexus:
-  #   image: sonatype/nexus3:3.43.0
-  #   volumes:
-  #     - nexus_data:/sonatype-work
-  #   ports:
-  #     - "8081:8081"
-  #   networks:
-  #     - cisystem
+  nexus:
+    image: sonatype/nexus3:3.60.0
+    volumes:
+      - nexus_data:/sonatype-work
+    ports:
+      - "8081:8081"
+    networks:
+      - cisystem
 
   # slapd:
   #   build:
@@ -75,14 +81,6 @@ services:
   #   networks:
   #     - cisystem
   #   env_file: ./agent-java/secrets.env
-
-  # gitlab:
-  #   build: ./gitlab
-  #   ports:
-  #     - "443:443"
-  #     - "80:80"
-  #   networks:
-  #     - cisystem
 
 networks:
   cisystem:
