@@ -172,7 +172,21 @@ tool:
 
 jobs:
   - script: >
-      pipelineJob('configuration-as-code') {}
+      pipelineJob('configuration-as-code') {
+        definition {
+            cpsScm {
+                scm {
+                    git {
+                        remote {
+                            url('https://github.com/freddieentity/nginx-service')
+                        }
+                        branch('*/main')
+                    }
+                }
+                scriptPath(jobName + '/Jenkinsfile')
+            }
+        }    
+      }
 #       def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
 #       "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
 

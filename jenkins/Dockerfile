@@ -1,10 +1,8 @@
 FROM jenkins/jenkins:lts
 USER root
 
-RUN \
-# Update
-apt-get update -y && \
-apt-get install yq unzip wget -qqy apt-transport-https ca-certificates curl gnupg2 software-properties-common -y 
+RUN apt-get update -qq -y && \
+    apt-get install yq unzip wget -qqy apt-transport-https ca-certificates curl gnupg2 software-properties-common -y 
 
 RUN curl -fsSL https://download.docker.com/linux/debian/gpg | apt-key add -
 RUN add-apt-repository \
@@ -34,4 +32,5 @@ RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
 COPY jenkins.yaml /var/jenkins_home/jenkins.yaml
 # Install CLI tools for Jenkins to interact with external systems
 # Then restrict the Jenkins to use its user only
+# RUN usermod -aG docker jenkins
 # USER jenkins

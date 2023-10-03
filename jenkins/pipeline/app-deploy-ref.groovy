@@ -23,7 +23,7 @@ pipeline {
         stage('Build') {
             steps {
                 echo 'Building..'
-                withDockerRegistry([credentialsId: "CONTAINER_REGISTRY", url: ""]) {
+                withDockerRegistry([credentialsId: "CONTAINER_RESIGTRY_CREDENTIALS", url: ""]) {
                     sh "docker build -t ${CONTAINER_REPOSITORY}/${APPLICATION_NAME}:${GIT_COMMIT} ${CONTAINER_BUILD_CONTEXT}"
                     sh "docker push ${CONTAINER_REPOSITORY}/${APPLICATION_NAME}:${GIT_COMMIT}"
                 }
