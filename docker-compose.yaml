@@ -22,6 +22,8 @@ services:
     environment:
       POSTGRES_USER: sonar
       POSTGRES_PASSWORD: sonarpasswd
+    ports:
+      - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
       
@@ -33,14 +35,14 @@ services:
       - "9092:9092"
     networks:
       - cisystem
-    # volumes:
-    #   - ./plugins:/opt/sonarqube/extensions/plugins
     environment:
+      SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: true
       SONARQUBE_JDBC_USERNAME: sonar
       SONARQUBE_JDBC_PASSWORD: sonarpasswd
       SONARQUBE_JDBC_URL: "jdbc:postgresql://postgres:5432/sonar"
       SONAR_WEB_JAVAADDITIONALOPTS: -javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.14.0.jar=web
       SONAR_CE_JAVAADDITIONALOPTS: -javaagent:./extensions/plugins/sonarqube-community-branch-plugin-1.14.0.jar=ce
+    restart: always
     depends_on: 
       - postgres
 

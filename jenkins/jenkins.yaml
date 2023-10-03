@@ -2,11 +2,11 @@ jenkins:
   systemMessage: "Jenkins configured automatically by Jenkins Configuration as Code plugin\n\n"
   crumbIssuer: "standard"
   securityRealm:
-    # local: # Only for hardcode admin login | Recommend using ldap in production
-    #   allowsSignup: false
-    #   users:
-    #    - id: ${JENKINS_ADMIN_ID}
-    #      password: ${JENKINS_ADMIN_PASSWORD}
+    local: # Only for hardcode admin login | Recommend using ldap in production
+      allowsSignup: false
+      users:
+       - id: ${JENKINS_ADMIN_ID}
+         password: ${JENKINS_ADMIN_PASSWORD}
     
   #   ldap:
   #     configurations:
@@ -58,23 +58,23 @@ jenkins:
   #           manuallyTrustedKeyVerificationStrategy:
   #             requireInitialManualTrust: false
   #     retentionStrategy: "always"
-  views:
-  - list:
-      columns:
-      - "status"
-      - "weather"
-      - "jobName"
-      - "lastSuccess"
-      - "lastFailure"
-      - "lastDuration"
-      - "buildButton"
-      - "coverageTotalsColumn"
-      - "favoriteColumn"
-      includeRegex: ".*.service.*"
-      name: "Hipster Shop"
-  - all:
-      name: "all"
-  viewsTabBar: "standard"
+  # views:
+  # # - list:
+  # #     columns:
+  # #     - "status"
+  # #     - "weather"
+  # #     - "jobName"
+  # #     - "lastSuccess"
+  # #     - "lastFailure"
+  # #     - "lastDuration"
+  # #     - "buildButton"
+  # #     - "coverageTotalsColumn"
+  # #     - "favoriteColumn"
+  # #     includeRegex: ".*.service.*"
+  # #     name: "Hipster Shop"
+  # - all:
+  #     name: "all"
+  # viewsTabBar: "standard"
 
 credentials:
   system:
@@ -118,78 +118,78 @@ credentials:
           username: ${CONTAINER_REGISTRY_USER}
       - file:
           description: "KUBECONFIG"
-          fileName: "kind-kube-config"
+          fileName: "config"
           id: "KUBECONFIG"
           scope: GLOBAL
-          secretBytes: ""
-unclassified:
-  location:
-    url: ${JENKINS_URL}
-  slackNotifier:
-    teamDomain: ${SLACK_TEAM_DOMAIN}
-    baseUrl: ${SLACK_BASE_URL}
-    tokenCredentialId: slackToken
-  sonarGlobalConfiguration:
-    buildWrapperEnabled: true
-    installations:
-      - name: SonarQubeServer
-        credentialsId: 'sonarToken'
-        serverUrl: ${SONAR_URL}
-        webhookSecretId: webhook
-        mojoVersion: ""
-        additionalAnalysisProperties: ""
-        additionalProperties: ""
-        triggers:
-          envVar: ""
-          skipScmCause: false
-          skipUpstreamCause: false
+          secretBytes: ${fileBase64:~/.kube/config}
+# unclassified:
+#   location:
+#     url: ${JENKINS_URL}
+#   slackNotifier:
+#     teamDomain: ${SLACK_TEAM_DOMAIN}
+#     baseUrl: ${SLACK_BASE_URL}
+#     tokenCredentialId: slackToken
+#   sonarGlobalConfiguration:
+#     buildWrapperEnabled: true
+#     installations:
+#       - name: SonarQubeServer
+#         credentialsId: 'sonarToken'
+#         serverUrl: ${SONAR_URL}
+#         webhookSecretId: webhook
+#         mojoVersion: ""
+#         additionalAnalysisProperties: ""
+#         additionalProperties: ""
+#         triggers:
+#           envVar: ""
+#           skipScmCause: false
+#           skipUpstreamCause: false
 
 tool:
   git:
     installations:
       - name: git
         home: /usr/bin/git
-  docker:
-    installations:
-      - name: docker
-        home: /usr/bin/docker
-  terraform:
-    installations:
-      - name: terraform
-        home: /usr/local/bin/terraform
-  kubectl:
-    installations:
-      - name: kubectl
-        home: /usr/local/bin/kubectl
-  sonarRunnerInstallation:
-    installations:
-    - name: "sonarqube-scanner"
-      properties:
-      - installSource:
-          installers:
-          - sonarRunnerInstaller:
-              id: "5.0.1.3006"
+  # docker:
+  #   installations:
+  #     - name: docker
+  #       home: /usr/bin/docker
+  # terraform:
+  #   installations:
+  #     - name: terraform
+  #       home: /usr/local/bin/terraform
+  # kubectl:
+  #   installations:
+  #     - name: kubectl
+  #       home: /usr/local/bin/kubectl
+  # sonarRunnerInstallation:
+  #   installations:
+  #   - name: "sonarqube-scanner"
+  #     properties:
+  #     - installSource:
+  #         installers:
+  #         - sonarRunnerInstaller:
+  #             id: "5.0.1.3006"
 
 jobs:
   - script: >
-      def project = "hipstershop"
-      def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
-      "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
+      pipelineJob('configuration-as-code') {}
+#       def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
+#       "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
 
-      microservices.each { jobName ->
-          pipelineJob(project + "-" + jobName) {
-              definition {
-                  cpsScm {
-                      scm {
-                          git {
-                              remote {
-                                  url('https://gitlab.com/gitops-freddieentity/application')
-                              }
-                              branch('*/main')
-                          }
-                      }
-                      scriptPath(jobName + '/Jenkinsfile')
-                  }
-              }
-          }
-      }
+#       microservices.each { jobName ->
+#           pipelineJob(jobName) {
+#               definition {
+#                   cpsScm {
+#                       scm {
+#                           git {
+#                               remote {
+#                                   url('https://gitlab.com/gitops-freddieentity/application')
+#                               }
+#                               branch('*/main')
+#                           }
+#                       }
+#                       scriptPath(jobName + '/Jenkinsfile')
+#                   }
+#               }
+#           }
+#       }

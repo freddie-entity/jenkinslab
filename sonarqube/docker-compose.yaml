@@ -8,8 +8,8 @@ services:
       POSTGRES_USER: sonar
       POSTGRES_PASSWORD: sonarpasswd
     restart: always
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
+    ports:
+      - 5432:5432
       
   sonarqube:
     build: .
@@ -19,8 +19,6 @@ services:
       - "9092:9092"
     networks:
       - cisystem
-    # volumes:
-    #   - ./plugins:/opt/sonarqube/extensions/plugins
     environment:
       SONAR_ES_BOOTSTRAP_CHECKS_DISABLE: true
       SONARQUBE_JDBC_USERNAME: sonar

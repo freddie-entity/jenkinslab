@@ -1,4 +1,3 @@
-def project = "hipstershop"
 def microservices = ["adservice", "cartservice", "checkoutservice", "currencyservice", "emailservice", "frontend", 
 "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
 
