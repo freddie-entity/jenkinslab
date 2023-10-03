@@ -116,12 +116,12 @@ credentials:
           password: ${CONTAINER_REGISTRY_PASSWORD}
           scope: GLOBAL
           username: ${CONTAINER_REGISTRY_USER}
-      - file:
-          description: "KUBECONFIG"
-          fileName: "config"
-          id: "KUBECONFIG"
-          scope: GLOBAL
-          secretBytes: ${fileBase64:~/.kube/config}
+      # - file:
+      #     description: "KUBECONFIG"
+      #     fileName: "config"
+      #     id: "KUBECONFIG"
+      #     scope: GLOBAL
+      #     secretBytes: ${fileBase64:~/.kube/config}
 # unclassified:
 #   location:
 #     url: ${JENKINS_URL}
