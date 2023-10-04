@@ -10,14 +10,13 @@ pipeline {
     agent any
 
     environment {
-        CONTAINER_REGISTRY= "docker.io"
         CONTAINER_REPOSITORY= "freddieentity"
         APPLICATION_SOURCE_URL = 'https://github.com/freddieentity/nginx-service.git'
         APPLICATION_NAME = "nginx-service"
         CONTAINER_BUILD_CONTEXT = "."
-        CONTAINER_REGISTRY_USER    = credentials('CONTAINER_REGISTRY_USER')
-        CONTAINER_REGISTRY_PASSWORD    = credentials('CONTAINER_REGISTRY_PASSWORD')
         APPLICATION_DOMAIN="https://example.com"
+
+        SONAR_SCANNER = tool 'sonarqube-scanner'
     }
     stages {
         stage ('Git Checkout') {
@@ -46,23 +45,21 @@ pipeline {
         stage('SAST') {
             steps {
                 echo 'SAST Scanning..'
-                // withSonarQubeEnv('SonarQube') {
-                //     sh "mvn sonar:sonar \
-                //                 -Dsonar.projectKey=${APPLICATION_NAME} \
-                //                 -Dsonar.host.url=http://localhost:9000"
-                // }
-                // timeout(time: 2, unit: 'MINUTES') {
-                //     script {
-                //         waitForQualityGate abortPipeline: true
-                //     }
-                // }
-                sh """
-                sonar-scanner \
-                    -Dsonar.projectKey=${APPLICATION_NAME} \
-                    -Dsonar.sources=. \
-                    -Dsonar.host.url=http://sonarqube:9000 \
-                    -Dsonar.login=sqp_fdffa5bd6a3c2b909bbc686d1bd3f9b7decbc57a
-                """
+                withSonarQubeEnv('SonarQube') {
+                    sh """
+                    ${SONAR_SCANNER}/bin/sonar-scanner \
+                        -Dsonar.projectKey=${APPLICATION_NAME} \
+                        -Dsonar.sources=. \
+                        -Dsonar.host.url=http://sonarqube:9000 \
+                        -Dsonar.login=sqp_fdffa5bd6a3c2b909bbc686d1bd3f9b7decbc57a
+                    """
+                }
+                timeout(time: 2, unit: 'MINUTES') {
+                    script {
+                        waitForQualityGate abortPipeline: true
+                    }
+                }
+
             }
         }
         stage('Build') {

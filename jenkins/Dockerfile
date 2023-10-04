@@ -1,4 +1,4 @@
-FROM jenkins/jenkins:lts
+FROM jenkins/jenkins:jdk17
 USER root
 
 RUN apt-get update -qq -y && \
@@ -26,10 +26,10 @@ RUN curl -LO "https://dl.k8s.io/release/$(curl -L -s https://dl.k8s.io/release/s
     mv kubectl /usr/local/bin
 
 ENV JAVA_OPTS -Djenkins.install.runSetupWizard=false
-ENV CASC_JENKINS_CONFIG /var/jenkins_home/jenkins.yaml
+# ENV CASC_JENKINS_CONFIG /var/jenkins_home/jenkins.yaml
 COPY plugins.txt /usr/share/jenkins/ref/plugins.txt
 RUN jenkins-plugin-cli --plugin-file /usr/share/jenkins/ref/plugins.txt
-COPY jenkins.yaml /var/jenkins_home/jenkins.yaml
+# COPY jenkins.yaml /var/jenkins_home/jenkins.yaml
 # Install CLI tools for Jenkins to interact with external systems
 # Then restrict the Jenkins to use its user only
 # RUN usermod -aG docker jenkins

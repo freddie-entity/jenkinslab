@@ -10,7 +10,7 @@ cloudbees-folder:latest
 cobertura
 conditional-buildstep
 config-file-provider
-configuration-as-code:latest
+configuration-as-code:1670.v564dc8b_982d0
 copyartifact
 credentials
 credentials-binding
@@ -25,7 +25,7 @@ github-oauth
 gradle:latest
 htmlpublisher
 jacoco
-job-dsl:latest
+job-dsl:1.84
 junit
 kubernetes
 kubernetes-cli
@@ -58,3 +58,4 @@ workflow-aggregator
 workflow-multibranch
 ws-cleanup
 xunit
+templating-engine

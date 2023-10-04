@@ -3,9 +3,9 @@ resource "aws_instance" "controlplane" {
   instance_type = var.instance_type
   count         = 1
   key_name      = var.ansible_ssh_public_key_file
-  user_data     = file("${path.module}/scripts/container.sh")
+  # user_data     = file("${path.module}/scripts/container.sh")
 
   tags = {
-    Name = "Jenkins"
+    Name = "CICD Server"
   }
 }

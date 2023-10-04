@@ -3,7 +3,7 @@ variable "ansible_ssh_pass" {
 }
 
 variable "ansible_command" {
-  default     = "../playbook/kubeadm-shell.yml"
+  default     = "./ansible/playbook/install-kubeadm.yml"
   description = "Command for container lab hosts"
 }
 

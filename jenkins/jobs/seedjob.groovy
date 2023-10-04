@@ -2,7 +2,7 @@ def microservices = ["adservice", "cartservice", "checkoutservice", "currencyser
 "loadgenerator", "paymentservice", "productcatalogservice", "recommendationservice", "shippingservice"]
 
 microservices.each { jobName ->
-    pipelineJob(project + jobName) {
+    pipelineJob(jobName) {
         definition {
             cpsScm {
                 scm {
